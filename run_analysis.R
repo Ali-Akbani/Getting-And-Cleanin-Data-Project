@@ -39,4 +39,5 @@ all_data$activity_labels <- factor(all_data$activity_labels, levels=c(1,2,3,4,5,
 
 summary_data <- aggregate( . ~ activity_labels + subject_labels, data=all_data,FUN="mean");
 
-write.csv(x=summary_data,file="summary_data.txt");
+#write.csv(x=summary_data,file="summary_data.txt");
+write.table(x=summary_data,file=".\\summary_data.txt",quote=FALSE,append=FALSE,sep=" ",row.names=FALSE,col.names=FALSE);
