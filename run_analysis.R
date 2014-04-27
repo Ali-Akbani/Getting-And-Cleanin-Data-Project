@@ -10,12 +10,15 @@
 features <- read.delim(file=".\\features.txt", header=FALSE, sep="", quote="", comment.char="", nrows=562, colClasses=c("NULL","character"));
 feature_labels <- features[[1]];
 remove(features);
+feature_labels <- gsub("-","_",feature_labels);
+feature_labels <- gsub("\\(\\)","",feature_labels);
+feature_labels <- tolower(x=feature_labels);
 
 # Load the training data
 activity_labels <- read.delim(file=".\\train\\y_train.txt", header=FALSE, sep="", quote="", nrows=7353, colClasses=c("character"))[[1]];
 subject_labels <- read.delim(file=".\\train\\subject_train.txt", header=FALSE, sep="", quote="", nrows=7353, colClasses=c("character"))[[1]];
 all_training_data <- read.delim(file=".\\train\\X_train.txt",header=FALSE,sep="",quote="",comment.char="",nrows=7353,col.names=feature_labels);
-training_data <- cbind(activity_labels, subject_labels, all_training_data[, grep(pattern="[.]mean[.]|[.]std[.]",x=names(all_training_data), ignore.case=TRUE)] );
+training_data <- cbind(activity_labels, subject_labels, all_training_data[, grep(pattern="_mean$|_mean_|_std$|_std_",x=names(all_training_data), ignore.case=TRUE)] );
 remove(activity_labels);
 remove(subject_labels);
 remove(all_training_data);
@@ -24,7 +27,7 @@ remove(all_training_data);
 activity_labels <- read.delim(file=".\\test\\y_test.txt", header=FALSE, sep="", quote="", nrows=2947, colClasses=c("character"))[[1]];
 subject_labels <- read.delim(file=".\\test\\subject_test.txt", header=FALSE, sep="", quote="", nrows=2947, colClasses=c("character"))[[1]];
 all_test_data <- read.delim(file=".\\test\\X_test.txt",header=FALSE,sep="",quote="",comment.char="",nrows=2947,col.names=feature_labels);
-test_data <- cbind(activity_labels, subject_labels, all_test_data[, grep(pattern="[.]mean[.]|[.]std[.]",x=names(all_test_data), ignore.case=TRUE)] );
+test_data <- cbind(activity_labels, subject_labels, all_test_data[, grep(pattern="_mean$|_mean_|_std$|_std_",x=names(all_test_data), ignore.case=TRUE)] );
 remove(activity_labels);
 remove(subject_labels);
 remove(all_test_data);
@@ -37,7 +40,8 @@ remove(feature_labels);
 #label the data with descriptive name based on .\\activity_labels.txt
 all_data$activity_labels <- factor(all_data$activity_labels, levels=c(1,2,3,4,5,6), labels=c("WALKING","WALKING_UPSTAIRS","WALKING_DOWNSTAIRS","SITTING","STANDING","LAYING"));
 
+#Summarize the data and calculate means of the variables grouped by activity and subject
 summary_data <- aggregate( . ~ activity_labels + subject_labels, data=all_data,FUN="mean");
 
-#write.csv(x=summary_data,file="summary_data.txt");
+#Write to file. format has been kept same as the input data for consistency
 write.table(x=summary_data,file=".\\summary_data.txt",quote=FALSE,append=FALSE,sep=" ",row.names=FALSE,col.names=FALSE);
